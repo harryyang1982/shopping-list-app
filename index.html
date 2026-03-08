@@ -114,16 +114,18 @@
     <div id="count" class="count"></div>
   </div>
 
-  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
   <script>
-    const SUPABASE_URL = 'https://rduoccztrreflwmiauua.supabase.co';
-    const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InJkdW9jY3p0cnJlZmx3bWlhdXVhIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzI5NjMwNzEsImV4cCI6MjA4ODUzOTA3MX0.ZYNy3w-hjD6XeL-SLm9iGmjjGwejkM3MyuUUBy3uzTo';
-    const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+    const { createClient } = window.supabase;
+    const db = createClient(
+      'https://rduoccztrreflwmiauua.supabase.co',
+      'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InJkdW9jY3p0cnJlZmx3bWlhdXVhIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzI5NjMwNzEsImV4cCI6MjA4ODUzOTA3MX0.ZYNy3w-hjD6XeL-SLm9iGmjjGwejkM3MyuUUBy3uzTo'
+    );
 
-    let items = [];
+    var items = [];
 
     async function loadItems() {
-      const { data, error } = await supabase
+      const { data, error } = await db
         .from('shopping_items')
         .select('*')
         .order('created_at', { ascending: true });
@@ -166,7 +168,7 @@
       if (!name) return;
       input.value = '';
       input.focus();
-      const { error } = await supabase
+      const { error } = await db
         .from('shopping_items')
         .insert({ name, checked: false });
       if (error) { console.error('Insert error:', error); return; }
@@ -176,7 +178,7 @@
     async function toggle(id) {
       const item = items.find(i => i.id === id);
       if (!item) return;
-      const { error } = await supabase
+      const { error } = await db
         .from('shopping_items')
         .update({ checked: !item.checked })
         .eq('id', id);
@@ -185,7 +187,7 @@
     }
 
     async function remove(id) {
-      const { error } = await supabase
+      const { error } = await db
         .from('shopping_items')
         .delete()
         .eq('id', id);
